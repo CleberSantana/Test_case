@@ -2,8 +2,8 @@
 Software built to read a test case file in .xlsx and show the steps in a "friendly" way.
 the file has a specific pattern, then it's possible to automate its reading.
 
-```
 ## Software behavior
+```
  - The interface is loaded 
  - The user must choose a file through file dialog
  - Clicking on "OK" button the sw will check on file all suitable tabs (test cases)
