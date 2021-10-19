@@ -71,3 +71,17 @@ def filtering(file_path:str, currenttest:str):
     wb.close()
                     
     return d, title
+
+
+def saving_data(file_path:str, procedure:str, sheet:str):
+    
+    wb = load_workbook(filename = os.path.basename(file_path), data_only = True)
+    ws = wb[str(sheet)]
+    
+    for i in d.keys():
+        for j in d[i].keys():
+            ws.cell(column=7, row=int(d[i][j]['cellrow']), value=str(d[i][j]['Actual'].strip()))
+
+    wb.save(filename = os.path.basename(file_path))
+    wb.close()
+        

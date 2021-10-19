@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 from components.events import def_path
 from components.events import filtering
 from components.events import sheetlist
+from components.events import saving_data
 
 
 lista = []
@@ -20,12 +21,15 @@ def inter():
     
     fr1 = [[sg.Multiline("", key = "text", size = (30, 15))]]
     fr2 = [[sg.Multiline("", key = "text1", size = (30, 15))]]
-    fr3 = [[sg.Multiline("", key = "text2", size = (30, 15))]]
+    fr3 = [[sg.Multiline("", key = "text2", size = (30, 15), enable_events=True)]]
 
     #layout building
     layout = [[sg.Text('',key='fileaddress', size=(71,0), enable_events = True), sg.Button('OK', key = 'ok')],
-                [sg.Frame("Execution Procedure", fr1, relief="flat"), sg.Frame("Expected Behavior", fr2, relief="flat"), sg.Button('>', key = 'copy'), sg.Frame("Actual Behavior", fr3, relief="flat"), sg.Frame('', fr6, relief="flat")],
-                [sg.Input("0", key = 'current', size=(3,0)), sg.Text("/"),sg.Text("000", key = 'number'), sg.Button('GO', key = 'go'),sg.Button('<<', key = 'previous'),sg.Button('>>', key = 'next')],
+                [sg.Frame("Execution Procedure", fr1, relief="flat"), sg.Frame("Expected Behavior", fr2, 
+                relief="flat"), sg.Button('>', key = 'copy'), sg.Frame("Actual Behavior", fr3, relief="flat"), 
+                sg.Frame('', fr6, relief="flat")],
+                [sg.Input("0", key = 'current', size=(3,0)), sg.Text("/"),sg.Text("000", key = 'number'), 
+                sg.Button('GO', key = 'go'),sg.Button('<<', key = 'previous'),sg.Button('>>', key = 'next')],
                 [sg.Text(" "*50, key = 'lista')]]
 
     window = sg.Window('TESTCASE').Layout(layout) # window load
@@ -34,14 +38,24 @@ def inter():
     file_path = 'Select a file'
     l0 = []
     l1 = {}
+    sheet0 = ''
 
     while True:
         event, values = window.Read(timeout=100)
         window.Element('fileaddress').Update(value=file_path)
         
-        if event == 'sheetslist':
-            stg = str(values['sheetslist']).replace('[','').replace(']','').replace("'",'')
-            d, title = filtering(file_path = file_path, currenttest = stg)
+        if event == 'sheetslist': # lista de abas
+            sheet0 = str(sheet0).replace('[','').replace(']','').replace("'",'')
+            sheet = str(values['sheetslist']).replace('[','').replace(']','').replace("'",'')
+            procedure = str(values['procedurelist']).replace('[','').replace(']','').replace("'",'')
+
+            if len(l1) > 1:
+                saving_data(file_path, procedure, sheet0)
+
+            window.Element('text').Update(value='')
+            window.Element('text1').Update(value='')
+            window.Element('text2').Update(value='')            
+            d, title = filtering(file_path = file_path, currenttest = sheet)
             window['procedurelist'](values=title)
             listbox = window['procedurelist']
             for index, i in enumerate(title):
@@ -56,9 +70,12 @@ def inter():
                         listbox.Widget.itemconfig(index, fg='Green')
 
         
-        if event == 'procedurelist':
+        if event == 'procedurelist': # lista de testes
+            sheet0 = values['sheetslist']
+            #d[proc][l1[ct]]['Actual'] = values['text2'].strip() # saving the actual behavior to dict
             window.Element('text').Update(value='')
             window.Element('text1').Update(value='')
+            window.Element('text2').Update(value='')
             l0.clear()
             l1.clear()
             proc = str(values['procedurelist']).replace('[','').replace(']','').replace("'",'')
@@ -104,7 +121,7 @@ def inter():
 
         if event == 'previous':
             ct = int(values['current'])
-            d[proc][l1[ct]]['Actual'] = values['text2'].strip()
+            #d[proc][l1[ct]]['Actual'] = values['text2'].strip()
             if ct > 1:
                 window.Element('text').Update(value='')
                 window.Element('text1').Update(value='')
@@ -119,7 +136,7 @@ def inter():
 
         if event == 'next':
             ct = int(values['current'])
-            d[proc][l1[ct]]['Actual'] = values['text2'].strip()
+            #d[proc][l1[ct]]['Actual'] = values['text2'].strip()
             if ct < len(l1):
                 ct = int(values['current']) + 1
                 window.Element('text').Update(value='')
@@ -136,15 +153,13 @@ def inter():
             try:
                 ct = int(values['current'])
                 window.Element('text').Update(value=d['procedure'][ct]['title'])
-
             except:
                 pass
 
+        if event == 'text2':
+            proc = str(values['procedurelist']).replace('[','').replace(']','').replace("'",'')
+            ct = int(values['current'])
+            d[proc][l1[ct]]['Actual'] = values['text2']
 
-        
-
-        
-        
-            
 def main():
     inter()
