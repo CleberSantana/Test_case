@@ -47,10 +47,9 @@ def inter():
         if event == 'sheetslist': # lista de abas
             sheet0 = str(sheet0).replace('[','').replace(']','').replace("'",'')
             sheet = str(values['sheetslist']).replace('[','').replace(']','').replace("'",'')
-            procedure = str(values['procedurelist']).replace('[','').replace(']','').replace("'",'')
 
             if len(l1) > 1:
-                saving_data(file_path, procedure, sheet0)
+                saving_data(file_path, sheet0)
 
             window.Element('text').Update(value='')
             window.Element('text1').Update(value='')
@@ -163,3 +162,4 @@ def inter():
 
 def main():
     inter()
+    

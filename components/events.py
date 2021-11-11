@@ -5,7 +5,6 @@ from openpyxl import load_workbook
 
 l = []
 
-
 def sheetlist(file_path):
     try:
         sheetlist1 = {}
@@ -36,7 +35,7 @@ def create_dict(title:int, dict1:dict): # function to create a dict
     return d # returning the dictionary
 
 
-#creating list from cvs file
+#creating list from .xlsx file
 def filtering(file_path:str, currenttest:str):
     title = []
     d1 = {}
@@ -69,12 +68,10 @@ def filtering(file_path:str, currenttest:str):
                     c += 1
     
     wb.close()
-                    
     return d, title
 
 
-def saving_data(file_path:str, procedure:str, sheet:str):
-    
+def saving_data(file_path:str, sheet:str):
     wb = load_workbook(filename = os.path.basename(file_path), data_only = True)
     ws = wb[str(sheet)]
     
@@ -84,4 +81,3 @@ def saving_data(file_path:str, procedure:str, sheet:str):
 
     wb.save(filename = os.path.basename(file_path))
     wb.close()
-        
